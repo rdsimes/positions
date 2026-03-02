@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RAD Dance Terms</title>
+  <style>
+    :root {
+      --pink: #e91e8c;
+      --pink-light: #fce4f3;
+      --pink-dark: #b0136b;
+      --grey: #f5f5f7;
+      --dark: #1a1a2e;
+      --card-bg: #ffffff;
+      --shadow: 0 2px 12px rgba(0,0,0,0.10);
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--grey);
+      color: var(--dark);
+      min-height: 100vh;
+    }
+    header {
+      background: var(--pink);
+      color: white;
+      padding: 20px 32px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 2px 8px rgba(233,30,140,0.3);
+    }
+    header h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: 0.5px; }
+    header p { font-size: 0.85rem; opacity: 0.85; }
+    .nav-tabs {
+      display: flex;
+      gap: 0;
+      background: white;
+      border-bottom: 2px solid #eee;
+      padding: 0 32px;
+    }
+    .nav-tab {
+      padding: 14px 28px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #666;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      transition: color 0.2s, border-color 0.2s;
+      user-select: none;
+    }
+    .nav-tab:hover { color: var(--pink); }
+    .nav-tab.active { color: var(--pink); border-bottom-color: var(--pink); }
+    .content { padding: 28px 32px; max-width: 1100px; margin: 0 auto; }
+
+    /* BROWSE */
+    .browse-controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+      align-items: center;
+    }
+    .browse-controls label { font-weight: 600; font-size: 0.95rem; }
+    select {
+      padding: 8px 14px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      background: white;
+      cursor: pointer;
+      min-width: 200px;
+      color: var(--dark);
+    }
+    select:focus { outline: none; border-color: var(--pink); }
+    .terms-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .term-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border-left: 4px solid var(--pink);
+      transition: transform 0.15s;
+    }
+    .term-card:hover { transform: translateY(-2px); }
+    .term-card .term-name {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--pink-dark);
+      margin-bottom: 8px;
+    }
+    .term-card .term-def {
+      font-size: 0.9rem;
+      color: #555;
+      line-height: 1.5;
+    }
+    .level-badge {
+      display: inline-block;
+      background: var(--pink-light);
+      color: var(--pink-dark);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* QUIZ */
+    .quiz-setup {
+      background: white;
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow);
+      max-width: 600px;
+    }
+    .quiz-setup h2 { font-size: 1.2rem; margin-bottom: 18px; color: var(--pink-dark); }
+    .quiz-setup label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem; }
+    .quiz-setup select { margin-bottom: 16px; width: 100%; }
+    .btn {
+      background: var(--pink);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 28px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn:hover { background: var(--pink-dark); }
+    .btn:active { transform: scale(0.97); }
+    .btn.secondary {
+      background: white;
+      color: var(--pink);
+      border: 2px solid var(--pink);
+    }
+    .btn.secondary:hover { background: var(--pink-light); }
+    .quiz-area { max-width: 700px; }
+    .quiz-progress {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .progress-bar-wrap {
+      flex: 1;
+      background: #eee;
+      border-radius: 10px;
+      height: 10px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--pink);
+      border-radius: 10px;
+      transition: width 0.3s;
+    }
+    .score-badge {
+      background: var(--pink-light);
+      color: var(--pink-dark);
+      font-weight: 700;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      white-space: nowrap;
+    }
+    .question-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 32px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+    .question-card .q-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #aaa;
+      margin-bottom: 10px;
+    }
+    .question-card .q-prompt {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--dark);
+      line-height: 1.4;
+    }
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .option-btn {
+      background: white;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      padding: 16px 20px;
+      text-align: left;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      line-height: 1.4;
+      font-family: inherit;
+    }
+    .option-btn:hover:not(:disabled) { border-color: var(--pink); background: var(--pink-light); }
+    .option-btn.correct { border-color: #2e7d32; background: #e8f5e9; color: #1b5e20; }
+    .option-btn.wrong { border-color: #c62828; background: #ffebee; color: #b71c1c; }
+    .option-btn.reveal { border-color: #2e7d32; background: #e8f5e9; color: #1b5e20; opacity: 0.7; }
+    .option-btn:disabled { cursor: default; }
+    .feedback-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .feedback-msg {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+    .feedback-msg.correct { color: #2e7d32; }
+    .feedback-msg.wrong { color: #c62828; }
+    .quiz-result {
+      background: white;
+      border-radius: var(--radius);
+      padding: 40px 32px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      max-width: 500px;
+    }
+    .quiz-result .big-score {
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: var(--pink);
+      line-height: 1;
+    }
+    .quiz-result .score-label {
+      font-size: 1rem;
+      color: #888;
+      margin-bottom: 24px;
+    }
+    .quiz-result h2 {
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+      color: var(--dark);
+    }
+    .hidden { display: none !important; }
+    .mode-options {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .mode-btn {
+      padding: 8px 18px;
+      border-radius: 20px;
+      border: 2px solid #ddd;
+      background: white;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .mode-btn.active { border-color: var(--pink); background: var(--pink-light); color: var(--pink-dark); }
+
+    @media (max-width: 600px) {
+      header { padding: 16px 18px; }
+      .content { padding: 18px 14px; }
+      .nav-tabs { padding: 0 14px; }
+      .nav-tab { padding: 12px 16px; font-size: 0.88rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>RAD Dance Terms</h1>
+    <p>Royal Academy of Dance &mdash; Browse & Quiz</p>
+  </div>
+</header>
+
+<div class="nav-tabs">
+  <div class="nav-tab active" data-tab="browse">Browse</div>
+  <div class="nav-tab" data-tab="quiz">Quiz</div>
+</div>
+
+<div class="content">
+
+  <!-- BROWSE TAB -->
+  <div id="tab-browse">
+    <div class="browse-controls">
+      <label for="level-select">Level:</label>
+      <select id="level-select"></select>
+    </div>
+    <div class="terms-grid" id="terms-grid"></div>
+  </div>
+
+  <!-- QUIZ TAB -->
+  <div id="tab-quiz" class="hidden">
+
+    <!-- Setup screen -->
+    <div class="quiz-setup" id="quiz-setup">
+      <h2>Configure your quiz</h2>
+      <label for="quiz-level">Level</label>
+      <select id="quiz-level"></select>
+
+      <label>Quiz direction</label>
+      <div class="mode-options">
+        <button class="mode-btn active" data-mode="term">Term &rarr; Definition</button>
+        <button class="mode-btn" data-mode="def">Definition &rarr; Term</button>
+      </div>
+
+      <label for="quiz-count">Number of questions</label>
+      <select id="quiz-count">
+        <option value="5">5</option>
+        <option value="10" selected>10</option>
+        <option value="20">20</option>
+        <option value="all">All</option>
+      </select>
+      <br/>
+      <button class="btn" id="start-quiz-btn" style="margin-top:8px">Start Quiz</button>
+    </div>
+
+    <!-- Active quiz -->
+    <div id="quiz-active" class="hidden">
+      <div class="quiz-area">
+        <div class="quiz-progress">
+          <span id="q-counter" style="font-size:0.9rem;color:#888;white-space:nowrap"></span>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+          </div>
+          <div class="score-badge" id="score-display">Score: 0 / 0</div>
+        </div>
+
+        <div class="question-card">
+          <div class="q-label" id="q-label">What is the definition of…</div>
+          <div class="q-prompt" id="q-prompt"></div>
+        </div>
+
+        <div class="options-list" id="options-list"></div>
+
+        <div class="feedback-row hidden" id="feedback-row">
+          <span class="feedback-msg" id="feedback-msg"></span>
+          <button class="btn" id="next-btn">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Result screen -->
+    <div id="quiz-result" class="quiz-result hidden">
+      <h2 id="result-heading"></h2>
+      <div class="big-score" id="result-score"></div>
+      <div class="score-label" id="result-label"></div>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <button class="btn" id="retry-btn">Try Again</button>
+        <button class="btn secondary" id="new-quiz-btn">New Quiz</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const DATA = {"organization":"Royal Academy of Dance","levels":{"Pre-Primary in Dance":[{"term":"Parallel Position","definition":"Feet placed hip-width apart and parallel."},{"term":"First Position","definition":"Heels together, toes turned out."},{"term":"Second Position","definition":"Feet apart and turned out."},{"term":"Demi-Plié","definition":"Small bend of the knees."},{"term":"Rise","definition":"Lifting onto the balls of the feet."},{"term":"Skip","definition":"Light step-hop movement."},{"term":"Gallop","definition":"Sideways traveling step with closing action."},{"term":"Spring","definition":"Small jump from two feet."},{"term":"March","definition":"Rhythmic walking step."},{"term":"Clap","definition":"Hands striking together rhythmically."}],"Primary in Dance":[{"term":"First Position of Arms","definition":"Rounded arms in front."},{"term":"Second Position of Arms","definition":"Arms open to the side."},{"term":"Third Position of Arms","definition":"One arm in first, one in second."},{"term":"Demi-Plié","definition":"Half bend of the knees."},{"term":"Battement Tendu","definition":"Foot brushing along the floor to a point."},{"term":"Chassé","definition":"One foot chasing the other."},{"term":"Galop","definition":"Traveling side step."},{"term":"Sauté","definition":"Jump from two feet landing on two feet."},{"term":"Polka Step","definition":"Light skipping character step."}],"Grade 1":[{"term":"Third Position","definition":"Heel to instep placement."},{"term":"Battement Glissé","definition":"Brush that leaves the floor slightly."},{"term":"Spring Point","definition":"Small jump finishing with one foot pointed."},{"term":"Balance","definition":"Sustained controlled hold."},{"term":"Turn","definition":"Rotation of the body."},{"term":"Mazurka Step","definition":"Character step with accent."},{"term":"Waltz Step","definition":"Traveling three-count step."}],"Grade 2":[{"term":"Fourth Position","definition":"Feet separated front and back."},{"term":"Grand Plié","definition":"Full bend of the knees."},{"term":"Rond de Jambe à Terre","definition":"Circular movement on the floor."},{"term":"Retiré","definition":"Foot drawn to the knee."},{"term":"Pas de Bourrée","definition":"Three-step linking movement."},{"term":"Assemblé","definition":"Jump joining feet in air."},{"term":"Character Walk","definition":"Stylised theatrical walk."}],"Grade 3":[{"term":"Fifth Position","definition":"Heel to toe placement fully crossed."},{"term":"Battement Fondu","definition":"Bend and stretch of both legs."},{"term":"Frappé","definition":"Striking action from ankle."},{"term":"Arabesque","definition":"Leg extended behind body."},{"term":"Glissade","definition":"Gliding connecting step."},{"term":"Sissonne","definition":"Jump from two feet to one."},{"term":"Entrechat Quatre","definition":"Beaten jump crossing twice."}],"Grade 4":[{"term":"Développé","definition":"Unfolding extension of leg."},{"term":"Attitude","definition":"Bent leg lifted position."},{"term":"Piqué","definition":"Pricked step onto straight leg."},{"term":"Pirouette Preparation","definition":"Preparation for turning movement."},{"term":"Grand Jeté","definition":"Large traveling leap."},{"term":"Cabriole","definition":"Beaten jump striking legs."},{"term":"Ballonné","definition":"Springing extension jump."}],"Grade 5":[{"term":"Pirouette en Dehors","definition":"Turn outward from supporting leg."},{"term":"Pirouette en Dedans","definition":"Turn inward toward supporting leg."},{"term":"Fouetté Preparation","definition":"Whipping preparation action."},{"term":"Grand Battement","definition":"Large controlled kick."},{"term":"Ballotté","definition":"Rocking jump alternating legs."},{"term":"Temps Levé","definition":"Jump from one foot landing same foot."},{"term":"Révérence","definition":"Bow or curtsy to conclude class."}]},"vocational_grades":{"Intermediate Foundation":[{"term":"Adage","definition":"Slow controlled center work."},{"term":"Petit Allegro","definition":"Small quick jumps."},{"term":"Chaînés","definition":"Linked half turns."},{"term":"Pas de Basque","definition":"Circular traveling step."}],"Intermediate":[{"term":"Grand Allegro","definition":"Large traveling jumps."},{"term":"Double Pirouette","definition":"Two rotations on one leg."},{"term":"Temps Lié","definition":"Linked flowing transfer of weight."}],"Advanced Foundation":[{"term":"Fouetté en Tournant","definition":"Whipping turning movement."},{"term":"Grand Fouetté","definition":"Large sweeping leg movement with turn."},{"term":"Tour en l'air","definition":"Turn in the air."}],"Advanced 1":[{"term":"Triple Pirouette","definition":"Three rotations on one leg."},{"term":"Brisé","definition":"Beaten gliding jump."},{"term":"Grand Sissonne","definition":"Large sissonne traveling jump."}],"Advanced 2":[{"term":"Manège","definition":"Circular traveling sequence."},{"term":"Grand Pirouette","definition":"Large turning movement."},{"term":"Multiple Fouettés","definition":"Series of whipping turns."}]}};
+
+// Flatten all terms
+const allLevels = { ...DATA.levels, ...DATA.vocational_grades };
+const ALL_KEY = "All Levels";
+const levelNames = [ALL_KEY, ...Object.keys(allLevels)];
+
+function getTerms(levelKey) {
+  if (levelKey === ALL_KEY) {
+    return Object.values(allLevels).flat();
+  }
+  return allLevels[levelKey] || [];
+}
+
+// Build level selects
+function populateSelect(el, includeAll) {
+  el.innerHTML = '';
+  (includeAll ? levelNames : Object.keys(allLevels)).forEach(name => {
+    const opt = document.createElement('option');
+    opt.value = name;
+    opt.textContent = name;
+    el.appendChild(opt);
+  });
+}
+
+const levelSelect = document.getElementById('level-select');
+const quizLevelSelect = document.getElementById('quiz-level');
+populateSelect(levelSelect, true);
+populateSelect(quizLevelSelect, true);
+
+// --- BROWSE ---
+function renderBrowse() {
+  const level = levelSelect.value;
+  const terms = getTerms(level);
+  const grid = document.getElementById('terms-grid');
+  grid.innerHTML = '';
+  terms.forEach(({ term, definition }) => {
+    const levelLabel = (level === ALL_KEY)
+      ? Object.entries(allLevels).find(([, arr]) => arr.some(t => t.term === term))?.[0] || ''
+      : level;
+    const card = document.createElement('div');
+    card.className = 'term-card';
+    card.innerHTML = `<div class="level-badge">${levelLabel}</div><div class="term-name">${term}</div><div class="term-def">${definition}</div>`;
+    grid.appendChild(card);
+  });
+}
+levelSelect.addEventListener('change', renderBrowse);
+renderBrowse();
+
+// --- QUIZ STATE ---
+let quizMode = 'term'; // 'term' | 'def'
+let quizQuestions = [];
+let qIndex = 0;
+let score = 0;
+let answered = false;
+let savedConfig = null;
+
+// Mode toggle
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    quizMode = btn.dataset.mode;
+  });
+});
+
+// Shuffle helper
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+document.getElementById('start-quiz-btn').addEventListener('click', startQuiz);
+document.getElementById('next-btn').addEventListener('click', nextQuestion);
+document.getElementById('retry-btn').addEventListener('click', retryQuiz);
+document.getElementById('new-quiz-btn').addEventListener('click', () => {
+  showQuizSetup();
+});
+
+function startQuiz() {
+  const level = quizLevelSelect.value;
+  const countVal = document.getElementById('quiz-count').value;
+  const pool = getTerms(level);
+
+  if (pool.length < 4) {
+    alert('This level has too few terms for a quiz (need at least 4).');
+    return;
+  }
+
+  let count = countVal === 'all' ? pool.length : Math.min(parseInt(countVal), pool.length);
+
+  savedConfig = { level, countVal, mode: quizMode };
+  quizQuestions = buildQuestions(shuffle(pool).slice(0, count), pool, quizMode);
+  qIndex = 0;
+  score = 0;
+
+  document.getElementById('quiz-setup').classList.add('hidden');
+  document.getElementById('quiz-result').classList.add('hidden');
+  document.getElementById('quiz-active').classList.remove('hidden');
+  renderQuestion();
+}
+
+function buildQuestions(selected, pool, mode) {
+  return selected.map(item => {
+    const distractors = shuffle(pool.filter(t => t.term !== item.term)).slice(0, 3);
+    const options = shuffle([item, ...distractors]);
+    return { item, options, mode };
+  });
+}
+
+function renderQuestion() {
+  answered = false;
+  const q = quizQuestions[qIndex];
+  const total = quizQuestions.length;
+
+  document.getElementById('q-counter').textContent = `Question ${qIndex + 1} of ${total}`;
+  document.getElementById('progress-fill').style.width = `${(qIndex / total) * 100}%`;
+  document.getElementById('score-display').textContent = `Score: ${score} / ${qIndex}`;
+  document.getElementById('feedback-row').classList.add('hidden');
+
+  if (q.mode === 'term') {
+    document.getElementById('q-label').textContent = 'What is the definition of…';
+    document.getElementById('q-prompt').textContent = q.item.term;
+  } else {
+    document.getElementById('q-label').textContent = 'Which term matches this definition…';
+    document.getElementById('q-prompt').textContent = q.item.definition;
+  }
+
+  const list = document.getElementById('options-list');
+  list.innerHTML = '';
+  q.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.textContent = q.mode === 'term' ? opt.definition : opt.term;
+    btn.addEventListener('click', () => handleAnswer(btn, opt, q));
+    list.appendChild(btn);
+  });
+}
+
+function handleAnswer(clickedBtn, chosen, q) {
+  if (answered) return;
+  answered = true;
+  const correct = chosen.term === q.item.term;
+
+  const allBtns = document.querySelectorAll('.option-btn');
+  allBtns.forEach((btn, i) => {
+    btn.disabled = true;
+    const opt = q.options[i];
+    if (opt.term === q.item.term) btn.classList.add(btn === clickedBtn ? 'correct' : 'reveal');
+  });
+  if (!correct) clickedBtn.classList.add('wrong');
+
+  if (correct) score++;
+
+  const fb = document.getElementById('feedback-msg');
+  fb.textContent = correct ? '✓ Correct!' : `✗ The answer was: "${q.mode === 'term' ? q.item.definition : q.item.term}"`;
+  fb.className = 'feedback-msg ' + (correct ? 'correct' : 'wrong');
+
+  const feedbackRow = document.getElementById('feedback-row');
+  feedbackRow.classList.remove('hidden');
+  const nextBtn = document.getElementById('next-btn');
+  nextBtn.textContent = qIndex + 1 < quizQuestions.length ? 'Next →' : 'See Results';
+}
+
+function nextQuestion() {
+  qIndex++;
+  if (qIndex >= quizQuestions.length) {
+    showResult();
+  } else {
+    renderQuestion();
+  }
+}
+
+function showResult() {
+  document.getElementById('quiz-active').classList.add('hidden');
+  const result = document.getElementById('quiz-result');
+  result.classList.remove('hidden');
+  const total = quizQuestions.length;
+  const pct = Math.round((score / total) * 100);
+  document.getElementById('result-score').textContent = `${score} / ${total}`;
+  document.getElementById('result-label').textContent = `${pct}% correct`;
+  let heading = pct === 100 ? '🌟 Perfect score!' : pct >= 80 ? '🎉 Great work!' : pct >= 60 ? '👍 Good effort!' : '💪 Keep practising!';
+  document.getElementById('result-heading').textContent = heading;
+}
+
+function retryQuiz() {
+  // Rebuild same quiz with same settings
+  if (!savedConfig) return;
+  quizLevelSelect.value = savedConfig.level;
+  document.getElementById('quiz-count').value = savedConfig.countVal;
+  quizMode = savedConfig.mode;
+  document.querySelectorAll('.mode-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === quizMode);
+  });
+  startQuiz();
+}
+
+function showQuizSetup() {
+  document.getElementById('quiz-active').classList.add('hidden');
+  document.getElementById('quiz-result').classList.add('hidden');
+  document.getElementById('quiz-setup').classList.remove('hidden');
+}
+
+// --- TABS ---
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const id = tab.dataset.tab;
+    document.getElementById('tab-browse').classList.toggle('hidden', id !== 'browse');
+    document.getElementById('tab-quiz').classList.toggle('hidden', id !== 'quiz');
+  });
+});
+</script>
+</body>
+</html>
